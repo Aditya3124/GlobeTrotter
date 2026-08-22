@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { arrayMove } from '@dnd-kit/sortable';
 
 export type Activity = {
   id: string;
@@ -46,6 +47,7 @@ type TripStore = {
   addStop: (tripId: string, stop: Stop) => void;
   updateStop: (tripId: string, stopId: string, stop: Partial<Stop>) => void;
   removeStop: (tripId: string, stopId: string) => void;
+  reorderStops: (tripId: string, oldIndex: number, newIndex: number) => void;
   addActivity: (tripId: string, activity: Activity) => void;
   updateActivity: (tripId: string, activityId: string, activity: Partial<Activity>) => void;
   removeActivity: (tripId: string, activityId: string) => void;
@@ -91,6 +93,15 @@ export const useTripStore = create<TripStore>()(
               ? { ...trip, stops: trip.stops.filter((stop) => stop.id !== stopId) }
               : trip
           ),
+        })),
+      reorderStops: (tripId, oldIndex, newIndex) =>
+        set((state) => ({
+          trips: state.trips.map((trip) => {
+            if (trip.id !== tripId) return trip;
+            const newStops = arrayMove(trip.stops, oldIndex, newIndex);
+            const updatedStops = newStops.map((stop, index) => ({ ...stop, order: index }));
+            return { ...trip, stops: updatedStops };
+          }),
         })),
 
       addActivity: (tripId, activity) =>
