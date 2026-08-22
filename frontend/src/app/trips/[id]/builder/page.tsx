@@ -1,9 +1,9 @@
 "use client";
-import { useState, use } from "react";
-import { useTripStore, Stop } from "@/store/useTripStore";
+import { useState, useEffect, use } from "react";
 import { Search, Plus, GripVertical, Calendar as CalendarIcon, ArrowRight, MapPin } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 
 import {
   DndContext,
@@ -21,11 +21,10 @@ import {
   useSortable
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Activity } from "@/store/useTripStore";
 
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
-function SortableStopItem({ stop, index, activities, onAddActivity }: { stop: Stop, index: number, activities: Activity[], onAddActivity: (cityId: string) => void }) {
+function SortableStopItem({ stop, index, activities, onAddActivity }: { stop: any, index: number, activities: any[], onAddActivity: (cityId: string) => void }) {
   const {
     attributes,
     listeners,
@@ -63,14 +62,14 @@ function SortableStopItem({ stop, index, activities, onAddActivity }: { stop: St
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
             <CalendarIcon className="w-4 h-4" />
-            {stop.startDate}
+            {new Date(stop.startDate).toLocaleDateString()}
           </div>
           <button onClick={() => onAddActivity(stop.id)} className="text-xs font-bold text-slate-400 hover:text-blue-600 transition-colors px-3 py-1.5 rounded-lg bg-slate-50 hover:bg-blue-50">
             + Activity
           </button>
         </div>
         
-        {activities.length > 0 && (
+        {activities && activities.length > 0 && (
           <div className="mt-4 space-y-2">
             {activities.map(activity => (
               <div key={activity.id} className="bg-slate-50 rounded-lg p-2.5 flex justify-between items-center text-sm border border-slate-100 shadow-sm group-hover:border-blue-50 transition-colors">
@@ -86,13 +85,13 @@ function SortableStopItem({ stop, index, activities, onAddActivity }: { stop: St
 }
 
 export default function ItineraryBuilderPage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter();
   const resolvedParams = use(params);
   const tripId = resolvedParams.id;
-  const trip = useTripStore((state) => state.trips.find(t => t.id === tripId));
-  const addStop = useTripStore((state) => state.addStop);
-  const reorderStops = useTripStore((state) => state.reorderStops);
-  const addActivity = useTripStore((state) => state.addActivity);
-
+  
+  const [trip, setTrip] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddingStop, setIsAddingStop] = useState(false);
   const [newStopCity, setNewStopCity] = useState("");
@@ -104,45 +103,108 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
     })
   );
 
+  useEffect(() => {
+    fetchTrip();
+  }, [tripId]);
+
+  const fetchTrip = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/trips/${tripId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setTrip(data);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return <div className="p-10 text-center font-bold text-slate-500">Loading trip...</div>;
+  }
+
   if (!trip) {
     return <div className="p-10 text-center font-black text-2xl uppercase tracking-widest text-slate-500">Trip not found.</div>;
   }
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
-      const oldIndex = trip.stops.findIndex(s => s.id === active.id);
-      const newIndex = trip.stops.findIndex(s => s.id === over.id);
-      reorderStops(tripId, oldIndex, newIndex);
+      // For a real app, you would recalculate order and call update endpoints for multiple stops.
+      // For this demo, we'll skip the backend reorder implementation.
+      console.log("Reorder not synced to backend in this version.");
     }
   };
 
-  const handleAddStopSubmit = (e: React.FormEvent) => {
+  const handleAddStopSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newStopCity.trim()) return;
-    addStop(tripId, {
-      id: crypto.randomUUID(),
-      city: newStopCity.trim(),
-      country: "",
-      startDate: trip.startDate,
-      endDate: trip.endDate,
-      order: trip.stops.length,
-    });
-    setNewStopCity("");
-    setIsAddingStop(false);
+    
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`http://localhost:5000/api/trips/${tripId}/stops`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          city: newStopCity.trim(),
+          country: "",
+          startDate: trip.startDate,
+          endDate: trip.endDate,
+          order: trip.stops.length,
+        })
+      });
+
+      if (res.ok) {
+        const newStop = await res.json();
+        setTrip({ ...trip, stops: [...trip.stops, newStop] });
+        setNewStopCity("");
+        setIsAddingStop(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleAddActivity = (cityId: string) => {
-    addActivity(tripId, {
-      id: crypto.randomUUID(),
-      name: "New Excursion",
-      type: "sightseeing",
-      cost: Math.floor(Math.random() * 100),
-      duration: "2 hours",
-      date: null,
-      cityId: cityId,
-      order: 0,
-    });
+  const handleAddActivity = async (cityId: string) => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`http://localhost:5000/api/trips/${tripId}/activities`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: "New Excursion",
+          type: "sightseeing",
+          cost: Math.floor(Math.random() * 100),
+          duration: "2 hours",
+          date: trip.startDate,
+          cityId: cityId,
+          order: 0,
+        })
+      });
+
+      if (res.ok) {
+        const newActivity = await res.json();
+        setTrip({ ...trip, activities: [...trip.activities, newActivity] });
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -151,7 +213,7 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
       <header className="h-24 bg-white flex items-center justify-between px-8 shrink-0 z-[50] shadow-sm border-b border-slate-100 relative">
         <div>
           <h1 className="text-2xl font-bold text-slate-800">{trip.name}</h1>
-          <p className="text-sm font-medium text-slate-500 mt-1">{trip.startDate} to {trip.endDate}</p>
+          <p className="text-sm font-medium text-slate-500 mt-1">{new Date(trip.startDate).toLocaleDateString()} to {new Date(trip.endDate).toLocaleDateString()}</p>
         </div>
         <div className="flex items-center gap-4">
           <Link href={`/trips/${tripId}/view`} className="px-6 py-2.5 text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-full transition-colors flex items-center gap-2 shadow-lg">
@@ -205,16 +267,16 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
                 onDragEnd={handleDragEnd}
               >
                 <SortableContext 
-                  items={trip.stops.map(s => s.id)}
+                  items={trip.stops.map((s: any) => s.id)}
                   strategy={verticalListSortingStrategy}
                 >
                   <div className="space-y-4">
-                    {trip.stops.map((stop, index) => (
+                    {trip.stops.map((stop: any, index: number) => (
                       <SortableStopItem 
                         key={stop.id} 
                         stop={stop} 
                         index={index} 
-                        activities={trip.activities.filter(a => a.cityId === stop.id)}
+                        activities={trip.activities.filter((a: any) => a.cityId === stop.id)}
                         onAddActivity={handleAddActivity}
                       />
                     ))}
@@ -239,7 +301,7 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
           </div>
           <div className="flex-1 relative z-0">
             {/* The markers coordinates are slightly altered to prevent them from stacking entirely if we keep adding "New City" */}
-            <Map markers={trip.stops.map((s, i) => ({ id: s.id, lat: 48.8566 + (i * 2), lng: 2.3522 + (i * 2), label: s.city }))} />
+            <Map markers={trip.stops.map((s: any, i: number) => ({ id: s.id, lat: 48.8566 + (i * 2), lng: 2.3522 + (i * 2), label: s.city }))} />
           </div>
         </div>
       </div>

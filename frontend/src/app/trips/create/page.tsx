@@ -16,20 +16,37 @@ export default function CreateTripPage() {
     description: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.startDate || !formData.endDate) return;
 
-    const newTrip = {
-      id: crypto.randomUUID(),
-      ...formData,
-      stops: [],
-      activities: [],
-      budget: { transport: 0, stay: 0, meals: 0, activities: 0 }
-    };
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:5000/api/trips", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          startDate: formData.startDate,
+          endDate: formData.endDate,
+          description: formData.description,
+          budget: { transport: 0, stay: 0, meals: 0, activities: 0 }
+        })
+      });
 
-    addTrip(newTrip);
-    router.push(`/trips/${newTrip.id}/builder`);
+      if (res.ok) {
+        const newTrip = await res.json();
+        addTrip(newTrip);
+        router.push(`/trips/${newTrip.id}/builder`);
+      } else {
+        console.error("Failed to create trip");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
