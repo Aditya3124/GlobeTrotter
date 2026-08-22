@@ -1,6 +1,6 @@
-# 🌎 GlobleTrotter
+# 🌎 GlobeTrotter
 
-GlobleTrotter is a modern, AI-powered travel planning and itinerary management application. It features a stunning minimalist UI inspired by neomorphism and neobrutalism, offering users a seamless experience for planning, viewing, and sharing their travel adventures.
+GlobeTrotter is a modern, AI-powered travel planning and itinerary management application. It features a stunning minimalist UI inspired by neomorphism and neobrutalism, offering users a seamless experience for planning, viewing, and sharing their travel adventures.
 
 ## ✨ Features Implemented So Far
 
