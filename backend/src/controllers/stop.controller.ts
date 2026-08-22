@@ -5,7 +5,7 @@ import { prisma } from '../utils/prisma';
 export const createStop = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const tripId = req.params.tripId as string;
-    const { city, country, startDate, endDate, order } = req.body;
+    const { city, country, startDate, endDate, order, latitude, longitude } = req.body;
 
     const trip = await prisma.trip.findUnique({ where: { id: tripId } }) as any;
     if (!trip) return res.status(404).json({ error: 'Trip not found' });
@@ -18,6 +18,8 @@ export const createStop = async (req: AuthRequest, res: Response): Promise<any> 
         startDate: new Date(startDate),
         endDate: new Date(endDate),
         order,
+        latitude,
+        longitude,
         tripId
       }
     });
@@ -32,7 +34,7 @@ export const createStop = async (req: AuthRequest, res: Response): Promise<any> 
 export const updateStop = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const id = req.params.id as string;
-    const { city, country, startDate, endDate, order } = req.body;
+    const { city, country, startDate, endDate, order, latitude, longitude } = req.body;
 
     const stop = await prisma.stop.findUnique({ where: { id }, include: { trip: true } }) as any;
     if (!stop) return res.status(404).json({ error: 'Stop not found' });
@@ -45,7 +47,9 @@ export const updateStop = async (req: AuthRequest, res: Response): Promise<any> 
         country,
         startDate: startDate ? new Date(startDate) : undefined,
         endDate: endDate ? new Date(endDate) : undefined,
-        order
+        order,
+        latitude,
+        longitude
       }
     });
 

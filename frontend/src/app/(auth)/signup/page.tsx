@@ -16,6 +16,7 @@ export default function SignupPage() {
     phone: "",
     city: "",
     country: "",
+    profilePhoto: "",
   });
   
   const [error, setError] = useState("");
@@ -23,6 +24,21 @@ export default function SignupPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 50 * 1024 * 1024) {
+        setError("File size must be less than 50MB");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, profilePhoto: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,9 +87,21 @@ export default function SignupPage() {
 
         {/* Photo Upload / Profile Circle */}
         <div className="flex justify-center relative z-10">
-          <div className="relative w-28 h-28 rounded-full bg-slate-50 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-100 transition-all cursor-pointer group border-2 border-dashed border-slate-200 hover:border-blue-400">
-            <Camera className="w-8 h-8 mb-1 group-hover:text-blue-500 transition-colors" />
-            <span className="text-xs font-bold tracking-wider group-hover:text-blue-500 transition-colors">UPLOAD</span>
+          <div className="relative w-28 h-28 rounded-full bg-slate-50 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-100 transition-all cursor-pointer group border-2 border-dashed border-slate-200 hover:border-blue-400 overflow-hidden">
+            {formData.profilePhoto ? (
+              <img src={formData.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <>
+                <Camera className="w-8 h-8 mb-1 group-hover:text-blue-500 transition-colors" />
+                <span className="text-xs font-bold tracking-wider group-hover:text-blue-500 transition-colors">UPLOAD</span>
+              </>
+            )}
+            <input 
+              type="file" 
+              accept="image/*"
+              onChange={handlePhotoChange}
+              className="absolute inset-0 opacity-0 cursor-pointer z-10"
+            />
           </div>
         </div>
         

@@ -46,6 +46,8 @@ model Stop {
   startDate  DateTime
   endDate    DateTime
   order      Int
+  latitude   Float?
+  longitude  Float?
   tripId     String
   trip       Trip       @relation(fields: [tripId], references: [id], onDelete: Cascade)
   activities Activity[]

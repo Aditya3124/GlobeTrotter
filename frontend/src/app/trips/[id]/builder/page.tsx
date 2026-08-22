@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, use } from "react";
-import { Search, Plus, GripVertical, Calendar as CalendarIcon, ArrowRight, MapPin } from "lucide-react";
+import { Search, Plus, GripVertical, Calendar as CalendarIcon, ArrowRight, MapPin, X, Trash2 } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
@@ -24,7 +24,7 @@ import { CSS } from '@dnd-kit/utilities';
 
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
-function SortableStopItem({ stop, index, activities, onAddActivity }: { stop: any, index: number, activities: any[], onAddActivity: (cityId: string) => void }) {
+function SortableStopItem({ stop, index, activities, onOpenActivityModal, onDeleteStop }: { stop: any, index: number, activities: any[], onOpenActivityModal: (cityId: string) => void, onDeleteStop: (stopId: string) => void }) {
   const {
     attributes,
     listeners,
@@ -55,7 +55,7 @@ function SortableStopItem({ stop, index, activities, onAddActivity }: { stop: an
         <div className="flex justify-between items-start mb-3">
           <h3 className="font-bold text-slate-800 text-lg leading-tight flex items-center gap-2">
             <MapPin className="w-4 h-4 text-rose-500" />
-            {stop.city}
+            {stop.city}, {stop.country}
           </h3>
           <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md shrink-0">Day {index + 1}</span>
         </div>
@@ -64,17 +64,25 @@ function SortableStopItem({ stop, index, activities, onAddActivity }: { stop: an
             <CalendarIcon className="w-4 h-4" />
             {new Date(stop.startDate).toLocaleDateString()}
           </div>
-          <button onClick={() => onAddActivity(stop.id)} className="text-xs font-bold text-slate-400 hover:text-blue-600 transition-colors px-3 py-1.5 rounded-lg bg-slate-50 hover:bg-blue-50">
-            + Activity
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => onDeleteStop(stop.id)} className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete Stop">
+              <Trash2 className="w-4 h-4" />
+            </button>
+            <button onClick={() => onOpenActivityModal(stop.id)} className="text-xs font-bold text-slate-400 hover:text-blue-600 transition-colors px-3 py-1.5 rounded-lg bg-slate-50 hover:bg-blue-50">
+              + Activity
+            </button>
+          </div>
         </div>
         
         {activities && activities.length > 0 && (
           <div className="mt-4 space-y-2">
             {activities.map(activity => (
               <div key={activity.id} className="bg-slate-50 rounded-lg p-2.5 flex justify-between items-center text-sm border border-slate-100 shadow-sm group-hover:border-blue-50 transition-colors">
-                <span className="font-semibold text-slate-700 truncate pr-2">{activity.name}</span>
-                <span className="text-slate-400 font-bold shrink-0">${activity.cost}</span>
+                <span className="font-semibold text-slate-700 truncate pr-2 flex flex-col">
+                  {activity.name}
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wide">{activity.type} • {activity.duration}</span>
+                </span>
+                <span className="text-blue-500 font-bold shrink-0">${activity.cost}</span>
               </div>
             ))}
           </div>
@@ -92,9 +100,22 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
   const [trip, setTrip] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   
-  const [searchQuery, setSearchQuery] = useState("");
   const [isAddingStop, setIsAddingStop] = useState(false);
-  const [newStopCity, setNewStopCity] = useState("");
+  const [cityQuery, setCityQuery] = useState("");
+  const [cityResults, setCityResults] = useState<any[]>([]);
+  const [selectedCity, setSelectedCity] = useState<any>(null);
+  const [isSearching, setIsSearching] = useState(false);
+
+  // Activity Modal State
+  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
+  const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
+  const [activityForm, setActivityForm] = useState({
+    name: "",
+    type: "Sightseeing",
+    cost: "",
+    duration: ""
+  });
+  const [isSubmittingActivity, setIsSubmittingActivity] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -106,6 +127,34 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
   useEffect(() => {
     fetchTrip();
   }, [tripId]);
+
+  // Debounced City Search
+  useEffect(() => {
+    if (cityQuery.trim().length < 2) {
+      setCityResults([]);
+      return;
+    }
+    
+    setIsSearching(true);
+    const timer = setTimeout(async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await fetch(`http://localhost:5000/api/cities/search?q=${encodeURIComponent(cityQuery)}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setCityResults(data);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [cityQuery]);
 
   const fetchTrip = async () => {
     const token = localStorage.getItem("token");
@@ -140,15 +189,13 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
-      // For a real app, you would recalculate order and call update endpoints for multiple stops.
-      // For this demo, we'll skip the backend reorder implementation.
       console.log("Reorder not synced to backend in this version.");
     }
   };
 
   const handleAddStopSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newStopCity.trim()) return;
+    if (!selectedCity) return;
     
     const token = localStorage.getItem("token");
     try {
@@ -159,8 +206,10 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
-          city: newStopCity.trim(),
-          country: "",
+          city: selectedCity.city,
+          country: selectedCity.country,
+          latitude: selectedCity.latitude,
+          longitude: selectedCity.longitude,
           startDate: trip.startDate,
           endDate: trip.endDate,
           order: trip.stops.length,
@@ -170,7 +219,8 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
       if (res.ok) {
         const newStop = await res.json();
         setTrip({ ...trip, stops: [...trip.stops, newStop] });
-        setNewStopCity("");
+        setSelectedCity(null);
+        setCityQuery("");
         setIsAddingStop(false);
       }
     } catch (error) {
@@ -178,8 +228,19 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
     }
   };
 
-  const handleAddActivity = async (cityId: string) => {
+  const handleOpenActivityModal = (cityId: string) => {
+    setSelectedCityId(cityId);
+    setActivityForm({ name: "", type: "Sightseeing", cost: "", duration: "" });
+    setIsActivityModalOpen(true);
+  };
+
+  const handleActivitySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedCityId || !activityForm.name) return;
+
+    setIsSubmittingActivity(true);
     const token = localStorage.getItem("token");
+    
     try {
       const res = await fetch(`http://localhost:5000/api/trips/${tripId}/activities`, {
         method: "POST",
@@ -188,19 +249,40 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
-          name: "New Excursion",
-          type: "sightseeing",
-          cost: Math.floor(Math.random() * 100),
-          duration: "2 hours",
+          name: activityForm.name,
+          type: activityForm.type,
+          cost: parseFloat(activityForm.cost) || 0,
+          duration: activityForm.duration,
           date: trip.startDate,
-          cityId: cityId,
-          order: 0,
+          cityId: selectedCityId,
+          order: trip.activities.filter((a:any) => a.cityId === selectedCityId).length,
         })
       });
 
       if (res.ok) {
         const newActivity = await res.json();
         setTrip({ ...trip, activities: [...trip.activities, newActivity] });
+        setIsActivityModalOpen(false);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmittingActivity(false);
+    }
+  };
+
+  const handleDeleteStop = async (stopId: string) => {
+    if (!window.confirm("Are you sure you want to delete this stop?")) return;
+    
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`http://localhost:5000/api/stops/${stopId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (res.ok) {
+        setTrip({ ...trip, stops: trip.stops.filter((s: any) => s.id !== stopId) });
       }
     } catch (error) {
       console.error(error);
@@ -234,21 +316,54 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
                 Add Stop
               </button>
             ) : (
-              <form onSubmit={handleAddStopSubmit} className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                <input
-                  type="text"
-                  placeholder="Enter city name..."
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 mb-3"
-                  value={newStopCity}
-                  onChange={(e) => setNewStopCity(e.target.value)}
-                  autoFocus
-                />
-                <div className="flex gap-2">
-                  <button type="button" onClick={() => setIsAddingStop(false)} className="flex-1 py-2 font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-200 rounded-xl transition-colors">
+              <form onSubmit={handleAddStopSubmit} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-lg relative">
+                {!selectedCity ? (
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search for a city..."
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 font-medium text-slate-800"
+                      value={cityQuery}
+                      onChange={(e) => setCityQuery(e.target.value)}
+                      autoFocus
+                    />
+                    {isSearching && (
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Searching...</div>
+                    )}
+                    
+                    {cityResults.length > 0 && (
+                      <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 shadow-xl rounded-xl overflow-hidden z-50 max-h-60 overflow-y-auto">
+                        {cityResults.map(city => (
+                          <div 
+                            key={city.id} 
+                            className="px-4 py-3 hover:bg-slate-50 cursor-pointer border-b border-slate-50 last:border-0 transition-colors"
+                            onClick={() => setSelectedCity(city)}
+                          >
+                            <div className="font-bold text-slate-800">{city.city}</div>
+                            <div className="text-xs text-slate-500 font-medium">{city.country}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-4 flex items-center justify-between">
+                    <div>
+                      <div className="font-bold text-blue-900">{selectedCity.city}</div>
+                      <div className="text-xs text-blue-600 font-medium">{selectedCity.country}</div>
+                    </div>
+                    <button type="button" onClick={() => setSelectedCity(null)} className="p-2 hover:bg-blue-100 rounded-full text-blue-500 transition-colors">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+                
+                <div className="flex gap-3 mt-4">
+                  <button type="button" onClick={() => { setIsAddingStop(false); setSelectedCity(null); setCityQuery(""); }} className="flex-1 py-2.5 font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors">
                     Cancel
                   </button>
-                  <button type="submit" className="flex-1 py-2 font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
-                    Add
+                  <button type="submit" disabled={!selectedCity} className="flex-1 py-2.5 font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors disabled:opacity-50 disabled:hover:bg-blue-600 shadow-sm">
+                    Add Stop
                   </button>
                 </div>
               </form>
@@ -277,7 +392,8 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
                         stop={stop} 
                         index={index} 
                         activities={trip.activities.filter((a: any) => a.cityId === stop.id)}
-                        onAddActivity={handleAddActivity}
+                        onOpenActivityModal={handleOpenActivityModal}
+                        onDeleteStop={handleDeleteStop}
                       />
                     ))}
                   </div>
@@ -289,22 +405,104 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
 
         {/* Center/Right: Map & Search */}
         <div className="flex-1 flex flex-col relative z-0">
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 flex items-center px-4 py-1">
-            <Search className="w-5 h-5 text-slate-400 mr-3 shrink-0" />
-            <input 
-              type="text" 
-              placeholder="Search cities to add..."
-              className="flex-1 outline-none bg-transparent font-medium py-3 text-slate-800 placeholder-slate-400"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
           <div className="flex-1 relative z-0">
-            {/* The markers coordinates are slightly altered to prevent them from stacking entirely if we keep adding "New City" */}
-            <Map markers={trip.stops.map((s: any, i: number) => ({ id: s.id, lat: 48.8566 + (i * 2), lng: 2.3522 + (i * 2), label: s.city }))} />
+            {/* Real Map Coordinates applied! */}
+            <Map markers={trip.stops.map((s: any, i: number) => ({ 
+              id: s.id, 
+              lat: s.latitude || (48.8566 + (i * 2)), // Fallback for old stops
+              lng: s.longitude || (2.3522 + (i * 2)), 
+              label: s.city 
+            }))} />
           </div>
         </div>
       </div>
+
+      {/* Activity Modal */}
+      {isActivityModalOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-slate-800">Add Activity</h2>
+              <button onClick={() => setIsActivityModalOpen(false)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleActivitySubmit} className="p-6 space-y-5">
+              <div className="space-y-1.5">
+                <label className="text-sm font-bold text-slate-700">Activity Name</label>
+                <input 
+                  type="text"
+                  required
+                  placeholder="e.g. Louvre Museum"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-800"
+                  value={activityForm.name}
+                  onChange={e => setActivityForm({...activityForm, name: e.target.value})}
+                  autoFocus
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-bold text-slate-700">Type</label>
+                  <select 
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-800 appearance-none cursor-pointer"
+                    value={activityForm.type}
+                    onChange={e => setActivityForm({...activityForm, type: e.target.value})}
+                  >
+                    <option value="Sightseeing">Sightseeing</option>
+                    <option value="Food & Dining">Food & Dining</option>
+                    <option value="Transit">Transit</option>
+                    <option value="Accommodation">Accommodation</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-sm font-bold text-slate-700">Cost ($)</label>
+                  <input 
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-800"
+                    value={activityForm.cost}
+                    onChange={e => setActivityForm({...activityForm, cost: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-sm font-bold text-slate-700">Duration</label>
+                <input 
+                  type="text"
+                  placeholder="e.g. 2 hours"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-800"
+                  value={activityForm.duration}
+                  onChange={e => setActivityForm({...activityForm, duration: e.target.value})}
+                />
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button 
+                  type="button" 
+                  onClick={() => setIsActivityModalOpen(false)}
+                  className="flex-1 py-3 font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isSubmittingActivity}
+                  className="flex-1 py-3 font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors disabled:opacity-50"
+                >
+                  {isSubmittingActivity ? "Saving..." : "Save Activity"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

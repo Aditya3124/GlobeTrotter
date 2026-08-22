@@ -7,7 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 
 export const register = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { email, password, firstName, lastName, phone, city, country } = req.body;
+    const { email, password, firstName, lastName, phone, city, country, profilePhoto } = req.body;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -24,7 +24,8 @@ export const register = async (req: Request, res: Response): Promise<any> => {
         lastName,
         phone,
         city,
-        country
+        country,
+        profilePhoto
       }
     });
 

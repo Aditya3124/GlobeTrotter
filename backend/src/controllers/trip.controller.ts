@@ -30,6 +30,9 @@ export const getTrips = async (req: AuthRequest, res: Response): Promise<any> =>
   try {
     const trips = await prisma.trip.findMany({
       where: { userId: req.userId },
+      include: {
+        stops: true
+      },
       orderBy: { startDate: 'asc' }
     });
     return res.status(200).json(trips);

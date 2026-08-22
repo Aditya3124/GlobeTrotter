@@ -6,6 +6,7 @@ import userRoutes from './routes/user.routes';
 import tripRoutes from './routes/trip.routes';
 import stopRoutes from './routes/stop.routes';
 import activityRoutes from './routes/activity.routes';
+import cityRoutes from './routes/city.routes';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/stops', stopRoutes);
 app.use('/api/activities', activityRoutes);
+app.use('/api/cities', cityRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'GlobeTrotter API is running' });
