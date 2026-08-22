@@ -4,7 +4,7 @@ import { Camera } from "lucide-react";
 export default function SignupPage() {
   return (
     <div className="flex min-h-[calc(100vh-80px)] items-center justify-center py-10 relative">
-      <div className="w-full max-w-md bg-white p-8 md:p-12 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 space-y-8 relative">
+      <div className="w-full max-w-2xl bg-white p-8 md:p-12 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 space-y-8 relative">
         
         {/* Decorative elements */}
         <div className="absolute -top-10 -left-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
@@ -24,23 +24,48 @@ export default function SignupPage() {
           </div>
         </div>
         
-        <form className="space-y-5 relative z-10">
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-700 pl-1">Name</label>
-            <input type="text" className="w-full px-6 py-4 bg-slate-50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-medium text-slate-800 text-base border border-slate-100" placeholder="Enter your full name" />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-700 pl-1">Email</label>
-            <input type="email" className="w-full px-6 py-4 bg-slate-50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-medium text-slate-800 text-base border border-slate-100" placeholder="Enter your email" />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-700 pl-1">Password</label>
-            <input type="password" className="w-full px-6 py-4 bg-slate-50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-medium text-slate-800 text-base border border-slate-100" placeholder="Create a password" />
+        <form className="space-y-6 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 pl-1">First Name</label>
+              <input type="text" className="w-full px-6 py-4 bg-slate-50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-medium text-slate-800 text-base border border-slate-100" placeholder="First Name" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 pl-1">Last Name</label>
+              <input type="text" className="w-full px-6 py-4 bg-slate-50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-medium text-slate-800 text-base border border-slate-100" placeholder="Last Name" />
+            </div>
           </div>
           
-          <div className="pt-4">
-            <Link href="/" className="flex items-center justify-center w-full py-4 bg-blue-500 text-white rounded-2xl font-bold text-lg hover:bg-blue-600 transition-colors shadow-lg hover:shadow-xl hover:-translate-y-0.5">
-              Sign Up
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 pl-1">Email Address</label>
+              <input type="email" className="w-full px-6 py-4 bg-slate-50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-medium text-slate-800 text-base border border-slate-100" placeholder="Email Address" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 pl-1">Phone Number</label>
+              <input type="tel" className="w-full px-6 py-4 bg-slate-50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-medium text-slate-800 text-base border border-slate-100" placeholder="Phone Number" />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 pl-1">City</label>
+              <input type="text" className="w-full px-6 py-4 bg-slate-50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-medium text-slate-800 text-base border border-slate-100" placeholder="City" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 pl-1">Country</label>
+              <input type="text" className="w-full px-6 py-4 bg-slate-50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-medium text-slate-800 text-base border border-slate-100" placeholder="Country" />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-slate-700 pl-1">Additional Information</label>
+            <textarea className="w-full px-6 py-4 bg-slate-50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-medium text-slate-800 text-base border border-slate-100 min-h-[120px] resize-none" placeholder="Additional Information ...." />
+          </div>
+          
+          <div className="pt-6 flex justify-center">
+            <Link href="/" className="px-12 py-4 bg-slate-900 text-white rounded-2xl font-bold text-lg hover:bg-slate-800 transition-colors shadow-lg hover:shadow-xl hover:-translate-y-0.5 inline-flex">
+              Register Users
             </Link>
           </div>
         </form>

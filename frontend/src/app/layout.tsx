@@ -20,37 +20,23 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} bg-slate-50 text-slate-800 font-medium`}>
         <div className="flex h-screen overflow-hidden">
-          {/* Sidebar Navigation */}
-          <aside className="w-64 bg-white hidden md:flex flex-col z-50 border-r border-slate-100 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
-            <div className="h-24 flex items-center px-8 border-b border-slate-100 mb-6">
-              <Link href="/" className="flex items-center gap-2 text-2xl font-bold text-slate-800 tracking-tight">
-                <span className="text-blue-500">Globe</span>Trotter.
-              </Link>
-            </div>
-            <nav className="flex-1 overflow-y-auto py-2 px-4 space-y-2">
-              <NavItem href="/" icon={<Compass className="w-5 h-5 text-indigo-500" />} label="Dashboard" />
-              <NavItem href="/trips" icon={<MapPin className="w-5 h-5 text-rose-500" />} label="My Trips" />
-              <NavItem href="/community" icon={<Users className="w-5 h-5 text-amber-500" />} label="Community" />
-              <NavItem href="/profile" icon={<User className="w-5 h-5 text-teal-500" />} label="Profile" />
-            </nav>
-          </aside>
-
           {/* Main Content */}
           <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
             {/* Top Header */}
-            <header className="h-24 flex items-center justify-between px-6 md:px-10 shrink-0 z-40 relative bg-slate-50 md:bg-transparent border-b border-slate-100 md:border-none">
+            <header className="h-24 flex items-center justify-between px-6 md:px-10 shrink-0 z-40 relative bg-white border-b border-slate-100 shadow-sm">
               <div className="flex items-center gap-2">
-                <Link href="/" className="flex md:hidden items-center gap-2 text-2xl font-bold text-slate-800 tracking-tight">
+                <Link href="/" className="flex items-center gap-2 text-2xl font-bold text-slate-800 tracking-tight">
                   <span className="text-blue-500">Globe</span>Trotter.
                 </Link>
               </div>
               
               {/* Center Links */}
               <nav className="hidden lg:flex items-center gap-10">
-                <Link href="/" className="text-sm font-bold text-blue-500">Home</Link>
-                <Link href="/about" className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">About</Link>
-                <Link href="/trips" className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">Destination</Link>
-                <Link href="/community" className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">Tours</Link>
+                <Link href="/" className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">Dashboard</Link>
+                <Link href="/explore" className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">Explore</Link>
+                <Link href="/trips" className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">My Trips</Link>
+                <Link href="/community" className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">Community</Link>
+                <Link href="/profile" className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">Profile</Link>
               </nav>
               
               <Link href="/login" className="flex items-center justify-center px-10 py-3 bg-slate-900 text-white rounded-full font-bold text-sm hover:bg-slate-800 transition-colors shadow-lg">
@@ -65,16 +51,5 @@ export default function RootLayout({
         </div>
       </body>
     </html>
-  );
-}
-
-function NavItem({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
-  return (
-    <Link href={href} className="flex items-center gap-4 px-4 py-4 rounded-2xl hover:bg-slate-50 transition-all text-slate-600 font-semibold group">
-      <div className="p-2 rounded-xl bg-slate-100 group-hover:bg-white group-hover:shadow-sm transition-all">
-        {icon}
-      </div>
-      <span>{label}</span>
-    </Link>
   );
 }

@@ -27,7 +27,7 @@ export default function Dashboard() {
           <img 
             src="/hero-globe-white.jpg" 
             alt="3D Globe Illustration" 
-            className="w-[120%] max-w-[600px] lg:max-w-[700px] h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700 ease-in-out mix-blend-multiply"
+            className="w-[120%] max-w-[600px] lg:max-w-[700px] h-auto object-contain hover:scale-105 transition-transform duration-700 ease-in-out mix-blend-multiply"
           />
         </div>
       </div>
@@ -74,6 +74,33 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <p className="text-slate-500 text-sm font-medium">Historical temples, beautiful gardens, and traditional tea houses.</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Previous Trips Section */}
+      <div className="space-y-6 pt-16">
+        <div className="flex justify-between items-end px-2">
+          <h2 className="text-3xl font-bold text-slate-800">Your Previous Trips</h2>
+          <button className="text-blue-500 font-bold hover:text-blue-600 transition-colors">View history →</button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {[1, 2].map((i) => (
+            <div key={i} className="bg-white rounded-[2rem] p-5 flex gap-5 group cursor-pointer shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-slate-100 hover:shadow-[0_20px_40px_rgba(0,0,0,0.06)] transition-all duration-300">
+              <div className="w-24 h-24 shrink-0 bg-slate-100 rounded-2xl overflow-hidden relative">
+                <div className="absolute inset-0 flex items-center justify-center text-slate-400 group-hover:scale-110 transition-transform duration-500">
+                  <ImageIcon className="w-6 h-6 opacity-50" />
+                </div>
+              </div>
+              <div className="flex flex-col justify-center">
+                <h3 className="text-lg font-bold text-slate-800 group-hover:text-blue-500 transition-colors">Paris, France</h3>
+                <p className="text-slate-400 text-sm font-medium mt-1">Oct 12 - Oct 18, 2025</p>
+                <div className="mt-2 flex gap-2">
+                  <span className="text-xs font-bold bg-slate-100 text-slate-500 px-2 py-1 rounded-md">Family</span>
+                  <span className="text-xs font-bold bg-slate-100 text-slate-500 px-2 py-1 rounded-md">7 Days</span>
+                </div>
               </div>
             </div>
           ))}

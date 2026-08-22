@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Share2, MapPin } from "lucide-react";
+import { Heart, MessageCircle, Share2, MapPin, Search, SlidersHorizontal, ListFilter, ArrowDownUp } from "lucide-react";
 
 export default function CommunityPage() {
   const posts = [
@@ -25,11 +25,35 @@ export default function CommunityPage() {
   ];
 
   return (
-    <div className="max-w-3xl mx-auto space-y-12 pb-24 relative">
-      <header className="pb-6">
+    <div className="max-w-4xl mx-auto space-y-10 pb-24 relative">
+      <header className="pb-2">
         <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800">Community</h1>
         <p className="text-slate-500 font-medium mt-2">Get inspired and connect with fellow travelers.</p>
       </header>
+
+      {/* Search Bar & Filters */}
+      <div className="flex flex-col md:flex-row gap-4 items-center bg-white p-4 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] border border-slate-100">
+        <div className="flex-1 w-full relative">
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-400" />
+          <input 
+            type="text" 
+            placeholder="Search community posts, topics, or travelers..." 
+            className="w-full bg-slate-50 border-none rounded-2xl py-5 pl-16 pr-6 text-lg font-semibold text-slate-800 placeholder-slate-400 focus:ring-4 focus:ring-blue-500/20 focus:bg-white outline-none transition-all"
+          />
+        </div>
+        
+        <div className="flex w-full md:w-auto gap-3">
+          <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-5 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-2xl font-bold transition-colors">
+            <ListFilter className="w-5 h-5" /> Group by
+          </button>
+          <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-5 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-2xl font-bold transition-colors">
+            <SlidersHorizontal className="w-5 h-5" /> Filter
+          </button>
+          <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-5 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-2xl font-bold transition-colors">
+            <ArrowDownUp className="w-5 h-5" /> Sort by...
+          </button>
+        </div>
+      </div>
 
       {/* Create Post */}
       <div className="bg-white rounded-3xl p-6 flex gap-6 shadow-sm border border-slate-100">
