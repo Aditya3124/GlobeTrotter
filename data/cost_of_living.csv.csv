@@ -1,0 +1,81 @@
+rank,city,country,region,cost_index,rent_index,groceries_index,meal_cost_index,local_purchasing_power_index,population_city_millions,cost_crisis_tier,cost_category
+1,Zurich,Switzerland,Western Europe,118.5,70.6,115.4,121,164.4,0.45,1,Affluent – High Cost
+2,Geneva,Switzerland,Western Europe,116.5,65.1,114.3,121.8,158.5,0.62,1,Affluent – High Cost
+3,Basel,Switzerland,Western Europe,112.4,49.6,110.4,114.9,183.7,0.18,1,Affluent – High Cost
+4,Lausanne,Switzerland,Western Europe,111.5,55,108.9,116.2,163.7,0.14,1,Affluent – High Cost
+5,Bern,Switzerland,Western Europe,110,46.8,107.3,110.2,174.4,0.14,1,Affluent – High Cost
+6,New York,United States,North America,100,100,100,100,100,8.34,2,High Cost – Global Benchmark
+7,Reykjavik,Iceland,Northern Europe,98.9,50.1,105.2,109.3,109,0.24,2,High Cost – Rising Inflation
+8,San Francisco,United States,North America,97.6,80.5,103.2,109.2,151,0.87,2,High Cost – High Wages
+9,Tel Aviv,Israel,Middle East,91.4,46.2,81.9,98.2,109.5,4.42,2,High Cost – War Zone Premium
+10,Seattle,United States,North America,90.3,60.2,98,95.8,165,0.74,2,High Cost – High Wages
+11,Oslo,Norway,Northern Europe,90.2,39.3,90.7,99.1,110.8,0.7,2,High Cost – Manageable
+12,Singapore,Singapore,Southeast Asia,87.7,73.1,77.3,55.5,105.5,5.92,2,High Cost – Strong PPP
+13,London,United Kingdom,Western Europe,87.5,70.1,68.9,89.7,117.5,9.5,2,High Cost – Pressure
+14,Washington DC,United States,North America,87.3,69,88.8,95.4,152.1,0.72,2,High Cost – High Wages
+15,Boston,United States,North America,86.2,77.7,91.4,91.3,143.9,0.69,2,High Cost – Manageable
+16,Copenhagen,Denmark,Northern Europe,85.7,46.1,78.3,99.9,136.9,0.79,2,High Cost – Manageable
+17,Amsterdam,Netherlands,Western Europe,82.6,60,71.5,91.8,129.9,0.91,2,High Cost – Manageable
+18,Los Angeles,United States,North America,81.5,64.6,87.1,88.2,117,3.99,2,High Cost – Affordability Crisis
+19,Luxembourg,Luxembourg,Western Europe,80.6,54.8,78.5,90.7,147.2,0.66,2,High Cost – High Wages
+20,Miami,United States,North America,79.5,69,80.3,99.1,105.5,0.46,3,High Cost – Rent Pressure
+21,Stockholm,Sweden,Northern Europe,78.6,36.1,72.8,82,116.9,0.99,2,High Cost – Manageable
+22,Paris,France,Western Europe,78.6,43.5,77.9,75.2,118,2.16,2,High Cost – Manageable
+23,Dublin,Ireland,Western Europe,76.7,59.7,71.7,89.2,114.6,1.47,2,High Cost – Manageable
+24,Munich,Germany,Western Europe,76.1,45.4,63.5,81.9,142.7,1.56,2,High Cost – Manageable
+25,Chicago,United States,North America,76,55.2,82.6,81.6,157.6,2.7,2,High Cost – Manageable
+26,Hong Kong,Hong Kong,East Asia,75.2,63.1,75.1,51.1,91.6,7.49,2,High Cost – Low PPP
+27,Sydney,Australia,Oceania,75.1,53.8,79.2,69.6,117.1,5.31,2,High Cost – Housing Crisis
+28,Helsinki,Finland,Northern Europe,74.3,29.4,70.6,82.2,123.5,0.66,2,Moderate Cost
+29,Frankfurt,Germany,Western Europe,74,36.1,66.8,75.7,156.6,0.76,2,Moderate Cost
+30,Auckland,New Zealand,Oceania,74,49,80,73,98,1.62,2,High Cost – Manageable
+31,Vienna,Austria,Western Europe,73.9,29.6,74,75,133.5,1.93,2,Moderate Cost
+32,Brussels,Belgium,Western Europe,73.5,33.1,72,89.6,128,0.18,2,Moderate Cost
+33,Milan,Italy,Western Europe,73.1,41.4,70.3,78.2,83.5,1.37,3,Moderate Cost – Low PPP
+34,Vancouver,Canada,North America,73,63,74,75,97,0.67,3,High Cost – Severe Housing
+35,Dallas,United States,North America,72.9,45.8,75.6,72.5,149.5,1.34,2,Moderate Cost – High Wages
+36,Toronto,Canada,North America,72,56,72,74,108,2.93,2,High Cost – Housing Crisis
+37,Melbourne,Australia,Oceania,72,47,76,72,112,5.07,2,High Cost – Housing Crisis
+38,Hamburg,Germany,Western Europe,71.9,32.4,63.8,75.1,142.3,1.84,2,Moderate Cost
+39,Houston,United States,North America,70.5,43,72,70,140,2.3,2,Moderate Cost – High Wages
+40,Dubai,United Arab Emirates,Middle East,68,52,63,53,122,3.6,2,High Cost – Tax Free
+41,Tokyo,Japan,East Asia,63,31,64,56,88,9.73,3,Moderate Cost – Yen Weakness
+42,Doha,Qatar,Middle East,62,35,62,50,145,2.65,1,Low Cost – High Wages
+43,Shanghai,China,East Asia,60,37,55,50,80,24.9,3,Moderate – High Rent Ratio
+44,Seoul,South Korea,East Asia,59,38,61,53,95,9.9,3,Moderate Cost
+45,Beijing,China,East Asia,58,30,53,48,82,21.9,3,Moderate – Slowing Economy
+46,Prague,Czech Republic,Eastern Europe,57,28,52,63,95,1.31,3,Moderate Cost
+47,Warsaw,Poland,Eastern Europe,55,23,50,59,88,1.86,3,Moderate – Rising Fast
+48,Budapest,Hungary,Eastern Europe,52,19,47,55,82,1.76,3,Moderate – Inflation Rising
+49,Riyadh,Saudi Arabia,Middle East,51,25,51,40,110,7.6,1,Low Cost – Oil Rich
+50,Moscow,Russia,Eastern Europe,48,23,42,47,72,12.5,4,Sanctions Impact – Moderate
+51,Bangkok,Thailand,Southeast Asia,48,21,44,41,78,10.5,4,Low Income – Affordable
+52,Sao Paulo,Brazil,Latin America,44,22,42,44,52,12.3,4,Low Income – High Rent Ratio
+53,Kuala Lumpur,Malaysia,Southeast Asia,44,22,42,39,88,1.78,3,Moderate – Good PPP
+54,Beirut,Lebanon,Middle East,42,20,38,40,35,2.42,5,Conflict & Hyperinflation Crisis
+55,St Petersburg,Russia,Eastern Europe,42,18,38,42,65,5.6,4,Sanctions Impact – Moderate
+56,Mexico City,Mexico,Latin America,40,22,33,39,58,21.6,3,Moderate – Growing Unaffordability
+57,Amman,Jordan,Middle East,40,17,36,38,65,2.23,3,Moderate – War Impact Zone
+58,Manila,Philippines,Southeast Asia,40,14,36,39,52,14.4,5,Severe Affordability Crisis
+59,Cape Town,South Africa,Southern Africa,38,17,35,37,52,4.62,4,Low Income – Cost Rising
+60,Istanbul,Turkey,Western Asia,38,19,31,40,58,15.8,4,Severe Inflation Crisis
+61,Lima,Peru,Latin America,38,15,30,38,55,10.9,3,Low Income – Cost Pressure
+62,Almaty,Kazakhstan,Central Asia,38,18,34,36,72,1.91,3,Moderate – Resource Rich
+63,Kyiv,Ukraine,Eastern Europe,38,14,34,36,58,2.95,5,War-Driven Crisis
+64,Jakarta,Indonesia,Southeast Asia,37,17,30,33,58,34.5,4,Low Income – High Density
+65,Johannesburg,South Africa,Southern Africa,37,16,34,36,55,5.63,4,Low Income – Cost Rising
+66,Accra,Ghana,West Africa,36,15,32,34,48,2.51,5,Severe Inflation Crisis
+67,Nairobi,Kenya,East Africa,36,14,30,33,55,5,4,Low Income – Moderate Pressure
+68,Bogota,Colombia,Latin America,35,13,29,35,48,7.41,4,Low Income – High Inflation
+69,Lagos,Nigeria,West Africa,35,12,30,32,44,15,5,Hyperinflation Crisis
+70,Colombo,Sri Lanka,South Asia,35,13,31,33,52,0.75,5,Post-Crisis Recovery
+71,Buenos Aires,Argentina,Latin America,34,14,28,30,38,3.07,5,Hyperinflation Crisis
+72,Mumbai,India,South Asia,33,13,32,29,62,20.7,5,Severe Affordability Crisis
+73,Casablanca,Morocco,North Africa,32,11,29,30,48,3.75,4,Low Income – Stable
+74,Bangalore,India,South Asia,31,11,29,28,65,12.3,4,Low Income – Tech Hub
+75,Delhi,India,South Asia,28,9,26,27,55,32.9,5,Severe Affordability Crisis
+76,Dhaka,Bangladesh,South Asia,27,10,24,25,50,22,5,Severe Affordability Crisis
+77,Karachi,Pakistan,South Asia,27,8,23,25,48,16.9,5,Severe Inflation Crisis
+78,Cairo,Egypt,North Africa,26,7,22,24,42,21.7,5,Hyperinflation Crisis
+79,Lahore,Pakistan,South Asia,26,7,22,24,46,13.9,5,Severe Inflation Crisis
+80,Kathmandu,Nepal,South Asia,24,8,21,23,42,1.4,5,Low Income – Moderate Cost
