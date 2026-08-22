@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { authenticate } from '../middleware/auth.middleware';
 import { createTrip, getTrips, getTripById, updateTrip, deleteTrip, getTripBudget, toggleTripPrivacy } from '../controllers/trip.controller';
 import { createStop } from '../controllers/stop.controller';
+import { createActivity } from '../controllers/activity.controller';
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.post('/:id/share', toggleTripPrivacy);
 
 // Nested stops
 router.post('/:tripId/stops', createStop);
+router.post('/:tripId/activities', createActivity);
 
 export default router;
