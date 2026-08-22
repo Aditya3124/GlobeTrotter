@@ -37,6 +37,7 @@ export default function RootLayout({
                 <Link href="/trips" className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">My Trips</Link>
                 <Link href="/community" className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">Community</Link>
                 <Link href="/profile" className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">Profile</Link>
+                <Link href="/admin" className="text-sm font-semibold text-blue-500 hover:text-blue-600 transition-colors">Admin</Link>
               </nav>
               
               <Link href="/login" className="flex items-center justify-center px-10 py-3 bg-slate-900 text-white rounded-full font-bold text-sm hover:bg-slate-800 transition-colors shadow-lg">
