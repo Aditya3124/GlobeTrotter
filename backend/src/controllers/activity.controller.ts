@@ -4,21 +4,24 @@ import { prisma } from '../utils/prisma';
 
 export const createActivity = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
-    const { stopId } = req.params;
-    const { name, description, date, cost, type } = req.body;
+    const tripId = req.params.tripId as string;
+    const { name, description, date, cost, type, cityId, duration, order } = req.body;
 
-    const stop = await prisma.stop.findUnique({ where: { id: stopId }, include: { trip: true } });
-    if (!stop) return res.status(404).json({ error: 'Stop not found' });
-    if (stop.trip.userId !== req.userId) return res.status(403).json({ error: 'Unauthorized' });
+    const trip = await prisma.trip.findUnique({ where: { id: tripId } }) as any;
+    if (!trip) return res.status(404).json({ error: 'Trip not found' });
+    if (trip.userId !== req.userId) return res.status(403).json({ error: 'Unauthorized' });
 
     const activity = await prisma.activity.create({
       data: {
         name,
         description,
-        date: new Date(date),
+        date: date ? new Date(date) : null,
         cost: cost || 0,
         type,
-        stopId
+        cityId,
+        tripId,
+        duration,
+        order: order || 0
       }
     });
 
@@ -31,12 +34,12 @@ export const createActivity = async (req: AuthRequest, res: Response): Promise<a
 
 export const updateActivity = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
-    const { id } = req.params;
-    const { name, description, date, cost, type } = req.body;
+    const id = req.params.id as string;
+    const { name, description, date, cost, type, cityId, duration, order } = req.body;
 
-    const activity = await prisma.activity.findUnique({ where: { id }, include: { stop: { include: { trip: true } } } });
+    const activity = await prisma.activity.findUnique({ where: { id }, include: { trip: true } }) as any;
     if (!activity) return res.status(404).json({ error: 'Activity not found' });
-    if (activity.stop.trip.userId !== req.userId) return res.status(403).json({ error: 'Unauthorized' });
+    if (activity.trip.userId !== req.userId) return res.status(403).json({ error: 'Unauthorized' });
 
     const updatedActivity = await prisma.activity.update({
       where: { id },
@@ -45,7 +48,10 @@ export const updateActivity = async (req: AuthRequest, res: Response): Promise<a
         description,
         date: date ? new Date(date) : undefined,
         cost,
-        type
+        type,
+        cityId,
+        duration,
+        order
       }
     });
 
@@ -58,11 +64,11 @@ export const updateActivity = async (req: AuthRequest, res: Response): Promise<a
 
 export const deleteActivity = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
-    const activity = await prisma.activity.findUnique({ where: { id }, include: { stop: { include: { trip: true } } } });
+    const activity = await prisma.activity.findUnique({ where: { id }, include: { trip: true } }) as any;
     if (!activity) return res.status(404).json({ error: 'Activity not found' });
-    if (activity.stop.trip.userId !== req.userId) return res.status(403).json({ error: 'Unauthorized' });
+    if (activity.trip.userId !== req.userId) return res.status(403).json({ error: 'Unauthorized' });
 
     await prisma.activity.delete({ where: { id } });
 

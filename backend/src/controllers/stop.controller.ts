@@ -4,10 +4,10 @@ import { prisma } from '../utils/prisma';
 
 export const createStop = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
-    const { tripId } = req.params;
+    const tripId = req.params.tripId as string;
     const { city, country, startDate, endDate, order } = req.body;
 
-    const trip = await prisma.trip.findUnique({ where: { id: tripId } });
+    const trip = await prisma.trip.findUnique({ where: { id: tripId } }) as any;
     if (!trip) return res.status(404).json({ error: 'Trip not found' });
     if (trip.userId !== req.userId) return res.status(403).json({ error: 'Unauthorized' });
 
@@ -31,10 +31,10 @@ export const createStop = async (req: AuthRequest, res: Response): Promise<any> 
 
 export const updateStop = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { city, country, startDate, endDate, order } = req.body;
 
-    const stop = await prisma.stop.findUnique({ where: { id }, include: { trip: true } });
+    const stop = await prisma.stop.findUnique({ where: { id }, include: { trip: true } }) as any;
     if (!stop) return res.status(404).json({ error: 'Stop not found' });
     if (stop.trip.userId !== req.userId) return res.status(403).json({ error: 'Unauthorized' });
 
@@ -58,9 +58,9 @@ export const updateStop = async (req: AuthRequest, res: Response): Promise<any> 
 
 export const deleteStop = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
-    const stop = await prisma.stop.findUnique({ where: { id }, include: { trip: true } });
+    const stop = await prisma.stop.findUnique({ where: { id }, include: { trip: true } }) as any;
     if (!stop) return res.status(404).json({ error: 'Stop not found' });
     if (stop.trip.userId !== req.userId) return res.status(403).json({ error: 'Unauthorized' });
 
