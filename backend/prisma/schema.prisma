@@ -65,3 +65,57 @@ model Activity {
   tripId      String
   trip        Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
 }
+
+// --- Global Catalog Data (From CSVs) ---
+
+model City {
+  id         String   @id @default(uuid())
+  city       String
+  latitude   Float
+  longitude  Float
+  country    String
+  population BigInt?
+  
+  // Relations
+  costOfLiving CostOfLiving?
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model DestinationActivity {
+  id              String   @id @default(uuid())
+  destinationName String
+  country         String
+  continent       String
+  category        String
+  cost            Float
+  bestSeason      String
+  rating          Float
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model CostOfLiving {
+  id                       String   @id @default(uuid())
+  rank                     Int
+  city                     String
+  country                  String
+  region                   String
+  costIndex                Float
+  rentIndex                Float
+  groceriesIndex           Float
+  mealCostIndex            Float
+  localPurchasingPowerIndex Float
+  populationCityMillions   Float?
+  costCrisisTier           Int
+  costCategory             String
+
+  // Relation to City model
+  cityRefId                String?  @unique
+  cityRef                  City?    @relation(fields: [cityRefId], references: [id], onDelete: Cascade)
+
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+}
